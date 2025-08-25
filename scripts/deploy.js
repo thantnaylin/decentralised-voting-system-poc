@@ -17,11 +17,13 @@ async function main() {
 
     // Add sample candidates
     console.log("Adding sample candidates...");
-    await voting.addCandidate("Thant Nay Lin", "Noob engineer");
+    await voting.addCandidate("Thant Nay Lin", "Noob-ass engineer");
     await voting.addCandidate("Royston", "Gigachad Boss");
     await voting.addCandidate("San Sint", "Mean Machine");
 
     console.log("Sample candidates added!");
+    const candidateCount = await voting.getCandidateCount();
+    console.log("Candidate Count:", candidateCount.toString());
 }
 
 main()

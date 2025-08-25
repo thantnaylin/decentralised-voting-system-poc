@@ -105,6 +105,12 @@ contract StudentVoting {
         return candidateCount;
     }
 
+    function getCandidate(uint256 _candidateId) public view returns (uint256, string memory, string memory, uint256) {
+        require(_candidateId > 0 && _candidateId <= candidateCount, "Invalid candidate ID");
+        Candidate memory candidate = candidates[_candidateId];
+        return (candidate.id, candidate.name, candidate.position, candidate.voteCount);
+    }
+
     function getResults() public view returns (uint256[] memory, string[] memory, string[] memory, uint256[] memory) {
         uint256[] memory ids = new uint256[](candidateCount);
         string[] memory names = new string[](candidateCount);
