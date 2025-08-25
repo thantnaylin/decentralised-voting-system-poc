@@ -2,6 +2,11 @@
 
 This POC uses Solidity and Hardhat to build a quick prototype
 
+Install dependencies
+```shell
+npm install
+```
+
 Follow the commands below to deploy
 ```shell
 npm run node
