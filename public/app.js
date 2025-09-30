@@ -1,6 +1,10 @@
 
 // Contract configuration
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+
+const username = 'bsdfsdfsd';
+const password = 'supersecretpassword';
+
 const CONTRACT_ABI = [
     // Add your contract ABI here after compilation
     // This will be generated when you compile the contract
