@@ -13,7 +13,9 @@ async function main() {
     // Wait for deployment to complete
     await voting.waitForDeployment();
 
-    console.log("StudentVoting contract deployed to:", voting.address);
+    const contractAddress = await voting.getAddress();
+
+    console.log("StudentVoting contract deployed to:", contractAddress);
 
     // Add sample candidates
     console.log("Adding sample candidates...");

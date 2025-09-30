@@ -29,7 +29,7 @@ contract StudentVoting {
     mapping(address => Voter) public voters;
     uint256 public candidateCount;
 
-    // RPCs
+    // Events
     event VoterRegistered(address voter);
     event VoteCast(address voter, uint256 candidateId);
     event ElectionStarted();

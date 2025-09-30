@@ -6,6 +6,10 @@ module.exports = {
   networks: {
     hardhat: {
       chainId: 1337
+    },
+    localhost: {
+      host: "http://127.0.0.1:8545",
+      chainId: 1337
     }
   }
 };
