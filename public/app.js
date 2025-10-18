@@ -1,13 +1,8 @@
 
 // Contract configuration
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-
-const username = 'bsdfsdfsd';
-const password = 'supersecretpassword';
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 const CONTRACT_ABI = [
-    // Add your contract ABI here after compilation
-    // This will be generated when you compile the contract
     {
         "inputs": [
             {
@@ -375,11 +370,37 @@ class VotingApp {
         this.init();
     }
 
+    toggleCard(shouldShow, elementId) {
+        document.getElementById(elementId).style.display = shouldShow ? 'block' : 'none';
+    }
+
+    hideAllCards() {
+        this.toggleCard(false, "adminSection");
+        this.toggleCard(false, "electionStatus");
+        this.toggleCard(false, "candidateList");
+        this.toggleCard(false, "votingSection");
+        this.toggleCard(false, "resultSection");
+    }
+
+    showAllAdminCards() {
+        this.toggleCard(true, "adminSection");
+        this.toggleCard(true, "electionStatus");
+        this.toggleCard(true, "candidateList");
+        this.toggleCard(true, "resultSection");
+    }
+
+    showAllVoterCards() {
+        this.toggleCard(true, "votingSection");
+        this.toggleCard(true, "candidateList");
+        this.toggleCard(true, "electionStatus");
+        this.toggleCard(true, "resultSection");
+    }
+
+
     async init() {
         console.log("Initializing VotingApp...");
         // Check if MetaMask is installed
         if (typeof window.ethereum !== "undefined") {
-            console.log("MetaMask is installed!");
             this.provider = new ethers.providers.Web3Provider(window.ethereum);
         } else {
             console.log('NOT INSTALLED')
@@ -391,12 +412,14 @@ class VotingApp {
 
         // Try to connect if already authorized
         if (window.ethereum.selectedAddress) {
-            await this.connectWallet();
+            await this.disconnectWallet();
+            // await this.connectWallet();
         }
     }
 
     setupEventListeners() {
         document.getElementById("connectWallet").addEventListener("click", this.connectWallet.bind(this));
+        document.getElementById("disconnectWallet").addEventListener("click", this.disconnectWallet.bind(this));
         document.getElementById("addCandidate").addEventListener("click", this.addCandidate.bind(this));
         document.getElementById("registerVoter").addEventListener("click", this.registerVoter.bind(this));
         document.getElementById("startVoting").addEventListener("click", this.startVoting.bind(this));
@@ -406,21 +429,19 @@ class VotingApp {
     async connectWallet() {
         console.log("Connecting...")
         try {
-            await window.ethereum.request({method: "eth_requestAccounts"});
+            // await window.ethereum.request({method: "eth_requestAccounts"});
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x539' }] // Hex for 1337
+            })
             this.signer = this.provider.getSigner();
             this.currentAccount = await this.signer.getAddress();
-
-            console.log('Connected account:', this.currentAccount);
-            console.log("Contract address:", CONTRACT_ADDRESS);
-            console.log("ABI length:", CONTRACT_ABI.length);
 
             document.getElementById("currentAccount").textContent = this.currentAccount.substring(0, 6) + "..." + this.currentAccount.substring(38);
 
             // Initialize contract
             if (CONTRACT_ADDRESS && CONTRACT_ABI.length > 0) {
                 this.contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, this.signer);
-                console.log("Contract created:", this.contract);
-                console.log("Contract address from object:", this.contract.address);
                 await this.checkUserRole();
                 await this.loadElectionData();
             } else {
@@ -428,10 +449,33 @@ class VotingApp {
                 return;
             }
             this.showStatus("Wallet connected successfully!", "success");
+            // this.toggleCards(true);
+            document.getElementById("disconnectWallet").style.display = "block";
+            document.getElementById("connectWallet").style.display = "none";
+
         } catch (error) {
             console.error("Error connecting wallet:", error);
             this.showStatus("Error connecting wallet: " + error.message, "error")
         }
+    }
+
+    async disconnectWallet() {
+        this.currentAccount = null;
+        this.contract = null;
+        this.signer = null;
+        this.isAdmin = false;
+
+        document.getElementById("currentAccount").style.display = "inline-block";
+
+        document.getElementById("currentAccount").textContent = "None";
+        document.getElementById("userRole").textContent = "Unknown";
+        document.getElementById("disconnectWallet").style.display = "none";
+        document.getElementById("connectWallet").style.display = "block";
+
+        document.getElementById("userRole").style.color = "white";
+
+
+        this.hideAllCards();
     }
 
     async addCandidate() {
@@ -515,7 +559,14 @@ class VotingApp {
             this.isAdmin = admin.toLowerCase() === this.currentAccount.toLowerCase();
 
             document.getElementById("userRole").textContent = this.isAdmin ? "Admin" : "Voter";
-            document.getElementById("adminSection").style.display = this.isAdmin ? "block" : "none";
+            document.getElementById("userRole").style.color = "green";
+
+            if (this.isAdmin) {
+                this.showAllAdminCards();
+            } else {
+                this.showAllVoterCards();
+            }
+
         } catch (error) {
             console.error()
         }

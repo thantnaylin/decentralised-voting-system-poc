@@ -9,7 +9,7 @@
     "deploy": "npx hardhat run scripts/deploy.js --network localhost",
     "node": "npx hardhat node",
     "clean": "npx hardhat clean",
-    "run-ui": "npx http-server public -p 8000"
+    "run-ui": "npx http-server public -p 8000 -c-1"
   },
   "keywords": [],
   "author": "",
