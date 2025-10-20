@@ -370,30 +370,63 @@ class VotingApp {
         this.init();
     }
 
-    toggleCard(shouldShow, elementId) {
+    toggleElement(shouldShow, elementId) {
         document.getElementById(elementId).style.display = shouldShow ? 'block' : 'none';
     }
 
     hideAllCards() {
-        this.toggleCard(false, "adminSection");
-        this.toggleCard(false, "electionStatus");
-        this.toggleCard(false, "candidateList");
-        this.toggleCard(false, "votingSection");
-        this.toggleCard(false, "resultSection");
+
+        document.getElementById("mainTabs").style.display = "none";
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabContents.forEach(tab => {
+            tab.classList.remove("active");
+        })
     }
 
     showAllAdminCards() {
-        this.toggleCard(true, "adminSection");
-        this.toggleCard(true, "electionStatus");
-        this.toggleCard(true, "candidateList");
-        this.toggleCard(true, "resultSection");
+        document.getElementById("mainTabs").style.display = "block";
+
+        this.toggleElement(true, "adminTab");
+
+        this.toggleElement(false, "votingSectionTab");
+
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabContents.forEach(c => c.classList.remove("active"));
+
+        if (tabButtons.length > 0) {
+            tabButtons[0].classList.add("active");
+        }
+
+        if (tabContents.length > 0) {
+            tabContents[0].classList.add("active");
+        }
     }
 
     showAllVoterCards() {
-        this.toggleCard(true, "votingSection");
-        this.toggleCard(true, "candidateList");
-        this.toggleCard(true, "electionStatus");
-        this.toggleCard(true, "resultSection");
+
+        document.getElementById("mainTabs").style.display = "block";
+
+        this.toggleElement(false, "adminTab");
+        this.toggleElement(true, "votingSectionTab");
+
+
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabContents.forEach(c => c.classList.remove("active"));
+
+        if (tabButtons.length > 0) {
+            tabButtons[1].classList.add("active");
+        }
+
+        if (tabContents.length > 0) {
+            tabContents[1].classList.add("active");
+        }
     }
 
 
@@ -424,6 +457,23 @@ class VotingApp {
         document.getElementById("registerVoter").addEventListener("click", this.registerVoter.bind(this));
         document.getElementById("startVoting").addEventListener("click", this.startVoting.bind(this));
         document.getElementById("endVoting").addEventListener("click", this.endVoting.bind(this));
+
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                console.log("Tab clicked")
+                // remove active class
+                tabButtons.forEach(b => b.classList.remove("active"));
+                tabContents.forEach(c => c.classList.remove("active"));
+
+                // add active class to clicked tab
+                btn.classList.add("active");
+                console.log(btn.dataset.tab)
+                document.getElementById(btn.dataset.tab).classList.add("active");
+            });
+        })
     }
 
     async connectWallet() {
@@ -449,7 +499,6 @@ class VotingApp {
                 return;
             }
             this.showStatus("Wallet connected successfully!", "success");
-            // this.toggleCards(true);
             document.getElementById("disconnectWallet").style.display = "block";
             document.getElementById("connectWallet").style.display = "none";
 
@@ -473,9 +522,8 @@ class VotingApp {
         document.getElementById("connectWallet").style.display = "block";
 
         document.getElementById("userRole").style.color = "white";
-
-
         this.hideAllCards();
+        this.showStatus("Disconnected", "success");
     }
 
     async addCandidate() {
@@ -689,7 +737,7 @@ class VotingApp {
     }
 
     showStatus(message, type) {
-        const statusDiv = document.createElement("connectionStatus");
+        const statusDiv = document.getElementById("connectionStatus");
         statusDiv.textContent = message;
         statusDiv.className = `status ${type}`;
     }
